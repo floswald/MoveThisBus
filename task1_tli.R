@@ -120,4 +120,4 @@ barplot(rowSums(sharing_bus_table), names.arg = rownames(sharing_bus_table), col
 #     req_retry(backoff = ~10, max_tries = 12) %>%
 #     req_perform()
 # }
-# end of the documents
+# end of the document
