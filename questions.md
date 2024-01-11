@@ -34,6 +34,29 @@ for (i in bus_id) {
     req_perform()
 }
 ```
-I know in stata there is a command ==capture== where it allows me to skip if error happens, I wonder maybe there is something similar in R and I can modify the code if this is the right way of doing the task. 
 
-Thank you so much for the exercise, API seems to be super cool! 
+==The error reports as:==
+```
+Error in `req_perform()`:                                      
+! Failed to perform HTTP request.
+Caused by error in `curl::curl_fetch_memory()`:
+! URL rejected: Malformed input to a URL function
+Run `rlang::last_trace()` to see where the error occurred.
+
+rlang::last_trace()
+<error/httr2_failure>
+Error in `req_perform()`:
+! Failed to perform HTTP request.
+Caused by error in `curl::curl_fetch_memory()`:
+! URL rejected: Malformed input to a URL function
+
+Backtrace:
+    ▆
+ 1. ├─... %>% req_perform()
+ 2. └─httr2::req_perform(.)
+ 3.   └─base::tryCatch(...)
+ 4.     └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 5.       └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 6.         └─value[[3L]](cond)
+```
+I know in stata there is a command ==capture== where it allows me to skip if error happens, I wonder maybe there is something similar in R and I can modify the code if this is the right way of doing the task. 
