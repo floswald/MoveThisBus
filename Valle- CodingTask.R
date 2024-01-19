@@ -7,20 +7,13 @@
 #__________________________________________________________
 
 # Loading packages
-
-```{r}
-
 library(httr2)
 library(jsonlite)
-#library(purrr)
+library(purrr)
 library(dplyr)
 library(ggplot2)
 
-```
-
 # Setting up
-
-```{r}
 
 # API key in edit_r_environ()
 tfl_key <- Sys.getenv("TFL_KEY")
@@ -32,11 +25,7 @@ req <- req %>% req_headers("Authorization" = paste("Bearer", tfl_key))
 # Number of maximum retry attempts. (I am setting it to 10, but 5 has been the maximum I have needed. I think this way is safer than doing a while loop.)
 max_attempts <- 10
 
-```
-
 # 1. List of all license plates of buses working in the London bus network.
-
-```{r - Request}
 
 for (attempt in 1:max_attempts) {
   cat("Call attempt number: ", attempt, "\n")
@@ -60,10 +49,6 @@ for (attempt in 1:max_attempts) {
 }
 rm(retry_delay)
 
-```
-
-```{r - Store as list}
-
 # Store as large list
 vehicle_ids <- resp %>% resp_body_json()
 
@@ -79,11 +64,7 @@ cat("Total unique values: ", length(vehicle_ids), ". \n")
 # Print a sample of licence plates from list
 cat("Sample of five licence plates from list: ", paste(head(vehicle_ids, 5), collapse = ", "))
 
-```
-
 # 2. Buses database
-
-```{r - Buses database}
 
 buses <- resp %>% resp_body_json()
 
@@ -96,9 +77,6 @@ buses <- map_df(buses, ~ tibble(
 # Print the resulting dataframe
 print(head(buses, 3))
 
-```
-```{r - Unique number of lines for each unique bus database.}
-
 lines_per_bus <- buses[buses$vehicleId %in% vehicle_ids, ]
 
 # Count distinct lineNames per vehicle_id
@@ -107,9 +85,6 @@ lines_per_bus <- lines_per_bus %>%
   summarize(total_lines = n_distinct(lineName))
 
 print(head(lines_per_bus, 3))
-
-```
-```{r - Table with results}
 
 # Calculate summary statistics
 min_routes <- min(lines_per_bus$total_lines)
@@ -129,19 +104,12 @@ table <- data.frame(
 print(table)
 rm(min_routes, max_routes, mean_routes, buses_with_one_route, buses_with_two_routes, total_buses, table)
 
-```
-```{r - Buses per routes}
-
 buses_per_route <- buses %>%
   group_by(lineName) %>%
   summarise(unique_buses = n_distinct(vehicleId)) %>%
   ungroup()
 
 print(head(buses_per_route, 3))
-
-```
-
-```{r - Density graph}
 
 mean_value <- mean(buses_per_route$unique_buses, na.rm = TRUE)
 
@@ -160,10 +128,7 @@ Mode <- function(x) {
 }
 mode_value <- Mode(buses_per_route$unique_buses)
 
-```
-This graph illustrates the distribution of unique buses per route in the database. The red dashed line signifies the mean number of buses for a London bus route, measured at 6.38 buses. The distribution exhibits a leftward skewness with an extended right tail. The modal route features four buses, with a maximum of 20 buses observed on a specific route.
-
-```{r}
+print("This graph illustrates the distribution of unique buses per route in the database. The red dashed line signifies the mean number of buses for a London bus route, measured at 6.38 buses. The distribution exhibits a leftward skewness with an extended right tail. The modal route features four buses, with a maximum of 20 buses observed on a specific route.")
 
 # Order the data by number of buses
 buses_per_route <- buses_per_route[order(buses_per_route$unique_buses, decreasing = TRUE), ]
@@ -181,7 +146,5 @@ ggplot(buses_per_route, aes(x = reorder(lineName, -unique_buses), y = unique_bus
   geom_text(aes(label = unique_buses), vjust = -0.5) +
   scale_x_discrete(limits = top5_lines)
 
-```
-
-In this graph, we can observe the five routes with the highest number of unique buses, with line 38 having the maximum number of buses (20).
+print("In this graph, we can observe the five routes with the highest number of unique buses, with line 38 having the maximum number of buses (20).")
 
