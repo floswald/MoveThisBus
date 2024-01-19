@@ -23,12 +23,12 @@ resp_c<- req_c %>%
   req_retry(backoff = ~ 10) %>%
   req_perform()
 
-resp_c
-# the exact time where we make the call: 
-c_respJSON[[1]][["timestamp"]]
-
+resp_c  ##ok200 => succesful calls
 # first obtain a df of bus and line
 c_respJSON <- resp_c %>% resp_body_json()
+
+# the exact time where we make the call: 
+c_respJSON[[1]][["timestamp"]]
 
 ## finding whether the same bus (vehicle id) operates on the same route (line id) ----
 
